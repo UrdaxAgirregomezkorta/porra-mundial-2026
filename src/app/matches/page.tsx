@@ -140,8 +140,10 @@ export default function MatchesPage() {
 
                       {/* Score */}
                       <div className="flex flex-col items-center px-3">
-                        <div className="bg-slate-950 px-4 py-2 rounded-lg border border-slate-800 font-mono text-2xl font-black tracking-widest shadow-inner">
-                          {match.home_score ?? '-'}<span className="text-slate-600 mx-1">:</span>{match.away_score ?? '-'}
+                        <div className="bg-slate-950 px-4 py-2 rounded-lg border border-slate-800 font-mono text-2xl font-bold tracking-widest shadow-inner text-emerald-400">
+                          <span className="text-white">{match.home_score ?? '-'}</span>
+                          <span className="text-slate-600 mx-1">:</span>
+                          <span className="text-white">{match.away_score ?? '-'}</span>
                         </div>
                       </div>
 
