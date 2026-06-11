@@ -9,8 +9,67 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { getTeamName } from '@/lib/teams'
 
+function groupMatches(matches: any[]) {
+  const groupStageMatches = matches.filter(m => m.stage === 'group')
+  const adj: Record<string, Set<string>> = {}
+  
+  groupStageMatches.forEach(m => {
+    if (!adj[m.home_team]) adj[m.home_team] = new Set()
+    if (!adj[m.away_team]) adj[m.away_team] = new Set()
+    adj[m.home_team].add(m.away_team)
+    adj[m.away_team].add(m.home_team)
+  })
+
+  const visited = new Set<string>()
+  const groups: { name: string, matches: any[] }[] = []
+  let groupCharCode = 65 // 'A'
+
+  const sortedMatches = [...groupStageMatches].sort((a,b) => {
+    if (!a.kickoff_time) return 1;
+    if (!b.kickoff_time) return -1;
+    return new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime()
+  })
+  
+  sortedMatches.forEach(m => {
+    if (!visited.has(m.home_team)) {
+      const q = [m.home_team]
+      const groupTeams = new Set<string>()
+      
+      while (q.length > 0) {
+        const curr = q.shift()!
+        if (!visited.has(curr)) {
+          visited.add(curr)
+          groupTeams.add(curr)
+          adj[curr]?.forEach(neighbor => {
+            if (!visited.has(neighbor)) q.push(neighbor)
+          })
+        }
+      }
+      
+      const gMatches = sortedMatches.filter(x => groupTeams.has(x.home_team) && groupTeams.has(x.away_team))
+      
+      groups.push({
+        name: `Grupo ${String.fromCharCode(groupCharCode++)}`,
+        matches: gMatches
+      })
+    }
+  })
+
+  // Añadir fase eliminatoria como pestaña extra si la hubiera
+  const knockoutMatches = matches.filter(m => m.stage !== 'group')
+  if (knockoutMatches.length > 0) {
+    groups.push({
+      name: 'Eliminatorias',
+      matches: knockoutMatches
+    })
+  }
+
+  return groups
+}
+
 export default function MatchesPage() {
-  const [matches, setMatches] = useState<any[]>([])
+  const [matchGroups, setMatchGroups] = useState<{name: string, matches: any[]}[]>([])
+  const [activeGroup, setActiveGroup] = useState<string>('')
   const [predictions, setPredictions] = useState<Record<string, any[]>>({})
   const [participants, setParticipants] = useState<Record<string, string>>({})
   const [expandedMatch, setExpandedMatch] = useState<string | null>(null)
@@ -24,6 +83,11 @@ export default function MatchesPage() {
         .select('*')
         .order('kickoff_time', { ascending: true, nullsFirst: false })
 
+      // Agrupar
+      const groups = groupMatches(matchData || [])
+      setMatchGroups(groups)
+      if (groups.length > 0) setActiveGroup(groups[0].name)
+
       // Cargar participantes para mapear IDs a nombres
       const { data: partData } = await supabase
         .from('participants')
@@ -32,7 +96,7 @@ export default function MatchesPage() {
       const partMap: Record<string, string> = {}
       partData?.forEach(p => { partMap[p.id] = p.name })
 
-      // Cargar todas las predicciones de grupos con paginación para evitar el límite de 1000
+      // Cargar todas las predicciones de grupos con paginación
       let predData: any[] = []
       let page = 0
       while (true) {
@@ -53,7 +117,6 @@ export default function MatchesPage() {
         predMap[pred.match_id].push(pred)
       })
 
-      setMatches(matchData || [])
       setParticipants(partMap)
       setPredictions(predMap)
       setLoading(false)
@@ -86,9 +149,28 @@ export default function MatchesPage() {
           </Link>
         </div>
 
+        {/* Tabs de Grupos */}
+        {matchGroups.length > 0 && (
+          <div className="flex overflow-x-auto gap-2 pb-4 scrollbar-hide hide-scroll">
+            {matchGroups.map(g => (
+              <button
+                key={g.name}
+                onClick={() => setActiveGroup(g.name)}
+                className={`whitespace-nowrap px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
+                  activeGroup === g.name 
+                    ? 'bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(16,185,129,0.4)]' 
+                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                }`}
+              >
+                {g.name}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Grid de Partidos */}
         <div className="grid gap-4 md:grid-cols-2">
-          {matches.map((match, i) => {
+          {matchGroups.find(g => g.name === activeGroup)?.matches.map((match, i) => {
             const matchPreds = predictions[match.id] || []
             const isExpanded = expandedMatch === match.id
 
@@ -205,6 +287,16 @@ export default function MatchesPage() {
           })}
         </div>
       </div>
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        .hide-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scroll {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
     </div>
   )
 }
