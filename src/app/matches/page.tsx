@@ -103,16 +103,24 @@ export default function MatchesPage() {
                 <Card className="bg-slate-900/40 border-slate-800/50 backdrop-blur-md hover:bg-slate-800/60 transition-all group overflow-hidden">
                   <CardContent className="p-0">
                     {/* Header del partido */}
-                    <div className="p-3 border-b border-slate-800/50 flex justify-between items-center bg-slate-900/50">
-                      <Badge variant={match.status === 'FINISHED' ? 'secondary' : 'default'} className={
-                        match.status === 'FINISHED' 
-                          ? "bg-slate-800 text-slate-400 text-xs" 
-                          : match.status === 'IN_PLAY'
-                          ? "bg-red-500/20 text-red-400 border border-red-500/30 text-xs animate-pulse"
-                          : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs"
-                      }>
-                        {match.status === 'FINISHED' ? 'Finalizado' : match.status === 'IN_PLAY' ? '🔴 En Juego' : 'Próximamente'}
-                      </Badge>
+                    <div className="p-3 border-b border-slate-800/50 flex flex-col md:flex-row gap-2 justify-between items-start md:items-center bg-slate-900/50">
+                      <div className="flex items-center gap-2">
+                        <Badge variant={match.status === 'FINISHED' ? 'secondary' : 'default'} className={
+                          match.status === 'FINISHED' 
+                            ? "bg-slate-800 text-slate-400 text-xs" 
+                            : match.status === 'IN_PLAY'
+                            ? "bg-red-500/20 text-red-400 border border-red-500/30 text-xs animate-pulse"
+                            : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs"
+                        }>
+                          {match.status === 'FINISHED' ? 'Finalizado' : match.status === 'IN_PLAY' ? '🔴 En Juego' : 'Próximamente'}
+                        </Badge>
+                        {match.kickoff_time && (
+                          <span className="text-xs text-slate-400 flex items-center gap-1 font-medium bg-slate-800/50 px-2 py-1 rounded-md">
+                            <Clock className="w-3 h-3" />
+                            {new Date(match.kickoff_time).toLocaleString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">
                         {match.stage.replace(/_/g, ' ')}
                       </span>
