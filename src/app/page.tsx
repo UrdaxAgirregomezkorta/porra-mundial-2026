@@ -32,7 +32,7 @@ export default function LeaderboardPage() {
       <div className="min-h-screen bg-slate-950 flex justify-center items-center">
         <div className="animate-pulse flex flex-col items-center">
           <Trophy className="w-16 h-16 text-emerald-500/50 mb-4" />
-          <p className="text-slate-400 font-medium">Cargando clasificación...</p>
+          <p className="text-slate-400 font-medium">Sailkapena kargatzen...</p>
         </div>
       </div>
     )
@@ -41,7 +41,7 @@ export default function LeaderboardPage() {
   if (error) {
     return (
       <div className="p-8 text-center text-red-400">
-        <h2 className="text-2xl font-bold mb-4">Error de conexión</h2>
+        <h2 className="text-2xl font-bold mb-4">Konexio errorea</h2>
         <pre className="bg-slate-900 p-4 rounded text-left overflow-auto text-xs">{JSON.stringify(error, null, 2)}</pre>
       </div>
     )
@@ -64,19 +64,19 @@ export default function LeaderboardPage() {
             <Trophy className="w-10 h-10 text-emerald-400" />
           </div>
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tighter bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent drop-shadow-sm">
-            Mundial 2026
+            2026ko Mundiala
           </h1>
           <p className="text-slate-400 max-w-lg mx-auto text-lg font-medium">
-            Clasificación oficial en vivo
+            Sailkapen ofiziala zuzenean
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
             <Link href="/matches" className="inline-flex items-center justify-center px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-emerald-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] font-medium">
               <Calendar className="w-5 h-5 mr-2" />
-              Partidos
+              Partidak
             </Link>
             <Link href="/stats" className="inline-flex items-center justify-center px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-purple-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] font-medium">
               <BarChart3 className="w-5 h-5 mr-2" />
-              Estadísticas
+              Estatistikak
             </Link>
           </div>
         </motion.header>

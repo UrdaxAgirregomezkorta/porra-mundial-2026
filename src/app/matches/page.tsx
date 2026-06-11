@@ -49,7 +49,7 @@ function groupMatches(matches: any[]) {
       const gMatches = sortedMatches.filter(x => groupTeams.has(x.home_team) && groupTeams.has(x.away_team))
       
       groups.push({
-        name: `Grupo ${String.fromCharCode(groupCharCode++)}`,
+        name: `${String.fromCharCode(groupCharCode++)} Taldea`,
         matches: gMatches
       })
     }
@@ -59,7 +59,7 @@ function groupMatches(matches: any[]) {
   const knockoutMatches = matches.filter(m => m.stage !== 'group')
   if (knockoutMatches.length > 0) {
     groups.push({
-      name: 'Eliminatorias',
+      name: 'Kanporaketak',
       matches: knockoutMatches
     })
   }
@@ -129,7 +129,7 @@ export default function MatchesPage() {
       <div className="min-h-screen bg-slate-950 flex justify-center items-center">
         <div className="animate-pulse flex flex-col items-center">
           <Calendar className="w-16 h-16 text-emerald-500/50 mb-4" />
-          <p className="text-slate-400 font-medium">Cargando partidos...</p>
+          <p className="text-slate-400 font-medium">Partidak kargatzen...</p>
         </div>
       </div>
     )
@@ -142,10 +142,10 @@ export default function MatchesPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800/50">
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-emerald-400 to-emerald-200 bg-clip-text text-transparent">
-            Partidos
+            Partidak
           </h1>
           <Link href="/" className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-full text-sm font-medium hover:bg-slate-800 transition-colors">
-            ← Clasificación
+            ← Sailkapena
           </Link>
         </div>
 
@@ -194,7 +194,7 @@ export default function MatchesPage() {
                             ? "bg-red-500/20 text-red-400 border border-red-500/30 text-xs animate-pulse"
                             : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs"
                         }>
-                          {match.status === 'FINISHED' ? 'Finalizado' : match.status === 'IN_PLAY' ? '🔴 En Juego' : 'Próximamente'}
+                          {match.status === 'FINISHED' ? 'Amaituta' : match.status === 'IN_PLAY' ? '🔴 Jokoan' : 'Laster'}
                         </Badge>
                         {match.kickoff_time && (
                           <span className="text-xs text-slate-400 flex items-center gap-1 font-medium bg-slate-800/50 px-2 py-1 rounded-md">
@@ -248,7 +248,7 @@ export default function MatchesPage() {
                           className="w-full px-4 py-2 border-t border-slate-800/50 flex items-center justify-center gap-2 text-xs text-slate-400 hover:text-emerald-400 hover:bg-slate-800/30 transition-colors"
                         >
                           <Users className="w-3 h-3" />
-                          {isExpanded ? 'Ocultar' : 'Ver'} pronósticos ({matchPreds.length})
+                          {isExpanded ? 'Ezkutatu' : 'Ikusi'} pronostikoak ({matchPreds.length})
                           {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                         </button>
 
@@ -267,7 +267,7 @@ export default function MatchesPage() {
                                   .map((pred) => (
                                   <div key={pred.id} className="flex items-center justify-between px-3 py-1.5 rounded-md bg-slate-900/50 hover:bg-slate-800/50 transition-colors">
                                     <span className="text-sm font-medium text-slate-300">
-                                      {participants[pred.participant_id] || 'Desconocido'}
+                                      {participants[pred.participant_id] || 'Ezezaguna'}
                                     </span>
                                     <span className="font-mono text-sm font-bold text-emerald-400">
                                       {pred.predicted_home_score} - {pred.predicted_away_score}
