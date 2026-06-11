@@ -10,11 +10,45 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Aquí iría el fetch a la API de RapidAPI (API-Football)
-    // const res = await fetch('https://v3.football.api-sports.io/fixtures?league=1&season=2026&date=...', { ... })
-    // Simularemos la lógica asumiendo que hemos obtenido resultados nuevos.
-    
-    // 1. Obtener todos los partidos en juego o terminados (sin puntos asignados aún a los participantes)
+    // 1. Fetch a la API real de API-Football (RapidAPI) para obtener resultados del Mundial 2026
+    const apiKey = process.env.API_FOOTBALL_KEY
+    if (!apiKey) {
+      console.warn('API_FOOTBALL_KEY no está configurada. Saltando actualización de la API.')
+    } else {
+      // League 1 es el Mundial (World Cup) en API-Football. Temporada 2026.
+      // Usamos el endpoint directo oficial en lugar de RapidAPI
+      const response = await fetch('https://v3.football.api-sports.io/fixtures?league=1&season=2026', {
+        headers: {
+          'x-apisports-key': apiKey
+        },
+        // Evitamos cache agresivo en el fetch para tener resultados siempre frescos
+        cache: 'no-store' 
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const fixtures = data.response
+
+        if (fixtures && fixtures.length > 0) {
+          // Actualizar los resultados en nuestra base de datos
+          for (const fixture of fixtures) {
+            // Solo actualizamos si el partido ha empezado o terminado
+            if (['1H', '2H', 'HT', 'FT', 'PEN', 'AET'].includes(fixture.fixture.status.short)) {
+              await supabase
+                .from('matches')
+                .update({
+                  home_score: fixture.goals.home,
+                  away_score: fixture.goals.away,
+                  status: fixture.fixture.status.short === 'FT' ? 'FINISHED' : 'IN_PLAY'
+                })
+                .eq('api_fixture_id', fixture.fixture.id)
+            }
+          }
+        }
+      }
+    }
+
+    // 2. Obtener todos los partidos en juego o terminados para recalcular puntos
     // Por ahora recalculamos todo para los partidos que tienen resultado real.
     const { data: matches } = await supabase
       .from('matches')
