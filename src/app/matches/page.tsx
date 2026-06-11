@@ -1,96 +1,112 @@
+'use client'
+
 import { supabase } from '@/lib/supabase'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Calendar, Clock, Trophy, MapPin } from 'lucide-react'
 import Link from 'next/link'
-import { ArrowLeft, Calendar } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
-export const revalidate = 0
+export default function MatchesPage() {
+  const [matches, setMatches] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-export default async function MatchesPage() {
-  // Obtenemos los partidos (idealmente filtrados por fecha de hoy, pero aquí mostraremos los primeros 10 para probar)
-  const { data: matches, error } = await supabase
-    .from('matches')
-    .select(`
-      *,
-      predictions_groups (
-        predicted_home_score,
-        predicted_away_score,
-        points_earned,
-        participants (
-          name
-        )
-      )
-    `)
-    .limit(10) // Muestra 10 partidos para probar la UI
+  useEffect(() => {
+    async function loadData() {
+      const { data } = await supabase
+        .from('matches')
+        .select('*')
+        .order('kickoff_time', { ascending: true })
+      
+      setMatches(data || [])
+      setLoading(false)
+    }
+    loadData()
+  }, [])
 
-  if (error) {
-    console.error('Error fetching matches:', error)
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex justify-center items-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <Calendar className="w-16 h-16 text-emerald-500/50 mb-4" />
+          <p className="text-slate-400 font-medium">Cargando partidos...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         
-        <Link href="/" className="inline-flex items-center text-sm text-slate-400 hover:text-emerald-400 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Volver a la clasificación
-        </Link>
-
-        <header className="space-y-4 py-4">
-          <div className="flex items-center gap-3">
-            <Calendar className="w-8 h-8 text-emerald-400" />
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
-              Partidos
-            </h1>
-          </div>
-          <p className="text-slate-400">
-            Consulta los resultados y qué ha apostado cada persona en la fase de grupos.
-          </p>
-        </header>
-
-        <div className="space-y-6">
-          {matches?.map((match) => (
-            <Card key={match.id} className="bg-slate-900/50 border-slate-800 backdrop-blur-xl">
-              <CardHeader className="border-b border-slate-800 pb-4">
-                <div className="flex justify-between items-center">
-                  <Badge variant="outline" className="text-slate-300 border-slate-700 bg-slate-800/50 uppercase">
-                    {match.stage.replace('_', ' ')}
-                  </Badge>
-                  <span className="text-sm font-medium text-slate-400">
-                    {match.status === 'PENDING' ? 'Próximamente' : match.status === 'FINISHED' ? 'Finalizado' : 'En Juego'}
-                  </span>
-                </div>
-                <CardTitle className="text-center text-2xl font-bold mt-4 flex justify-center items-center gap-4">
-                  <span>{match.home_team}</span>
-                  <Badge className="text-lg px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    {match.home_score !== null ? match.home_score : '-'} : {match.away_score !== null ? match.away_score : '-'}
-                  </Badge>
-                  <span>{match.away_team}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-6">
-                <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Apuestas de los amigos:</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {match.predictions_groups?.map((pred: any, idx: number) => {
-                    const exact = pred.points_earned === 3
-                    const partial = pred.points_earned === 1
-                    const borderClass = exact ? 'border-emerald-500/50 bg-emerald-500/10' : partial ? 'border-blue-500/50 bg-blue-500/10' : 'border-slate-800 bg-slate-900/50'
-                    const textClass = exact ? 'text-emerald-400' : partial ? 'text-blue-400' : 'text-slate-300'
-
-                    return (
-                      <div key={idx} className={`p-2 rounded-md border ${borderClass} flex flex-col items-center justify-center text-center`}>
-                        <span className="text-xs font-semibold text-slate-400 mb-1">{pred.participants?.name}</span>
-                        <span className={`text-lg font-bold ${textClass}`}>
-                          {pred.predicted_home_score} - {pred.predicted_away_score}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-800/50">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-emerald-400 to-emerald-200 bg-clip-text text-transparent">
+            Partidos
+          </h1>
+          <Link href="/" className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-full text-sm font-medium hover:bg-slate-800 transition-colors">
+            Volver
+          </Link>
         </div>
 
+        {/* Grid de Partidos */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {matches.map((match, i) => (
+            <motion.div 
+              key={match.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+            >
+              <Card className="bg-slate-900/40 border-slate-800/50 backdrop-blur-md hover:bg-slate-800/60 transition-all group overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="p-4 border-b border-slate-800/50 flex justify-between items-center bg-slate-900/50">
+                    <Badge variant={match.status === 'FINISHED' ? 'secondary' : 'default'} className={
+                      match.status === 'FINISHED' 
+                        ? "bg-slate-800 text-slate-400" 
+                        : "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                    }>
+                      {match.status === 'FINISHED' ? 'Finalizado' : match.status === 'IN_PLAY' ? 'En Juego' : 'Próximamente'}
+                    </Badge>
+                    <div className="flex items-center text-xs font-mono text-slate-400">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {new Date(match.kickoff_time).toLocaleDateString('es-ES', { 
+                        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+                      })}
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 flex justify-between items-center relative">
+                    {/* Home Team */}
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mb-3 shadow-inner">
+                        <span className="font-bold text-slate-300 text-sm">{match.home_team.substring(0, 3).toUpperCase()}</span>
+                      </div>
+                      <span className="font-bold text-center group-hover:text-emerald-400 transition-colors">{match.home_team}</span>
+                    </div>
+
+                    {/* Score */}
+                    <div className="flex flex-col items-center flex-1 px-4">
+                      <div className="bg-slate-950 px-4 py-2 rounded-lg border border-slate-800 font-mono text-2xl font-black tracking-widest shadow-inner">
+                        {match.home_score ?? '-'} : {match.away_score ?? '-'}
+                      </div>
+                      <span className="text-xs text-slate-500 mt-2 font-medium uppercase tracking-wider">{match.stage.replace('_', ' ')}</span>
+                    </div>
+
+                    {/* Away Team */}
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="w-12 h-12 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center mb-3 shadow-inner">
+                        <span className="font-bold text-slate-300 text-sm">{match.away_team.substring(0, 3).toUpperCase()}</span>
+                      </div>
+                      <span className="font-bold text-center group-hover:text-emerald-400 transition-colors">{match.away_team}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   )

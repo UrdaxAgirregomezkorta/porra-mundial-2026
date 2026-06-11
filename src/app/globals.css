@@ -122,7 +122,11 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-slate-950 text-foreground;
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(16, 185, 129, 0.05), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.05), transparent 25%);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
