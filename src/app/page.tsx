@@ -69,9 +69,7 @@ export default function LeaderboardPage() {
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-emerald-400 mt-2">
             AISAO porria
           </h2>
-          <p className="text-slate-400 max-w-lg mx-auto text-lg font-medium mt-4">
-            Sailkapena
-          </p>
+
           <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
             <Link href="/matches" className="inline-flex items-center justify-center px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-emerald-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] font-medium">
               <Calendar className="w-5 h-5 mr-2" />
