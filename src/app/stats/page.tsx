@@ -41,11 +41,13 @@ export default function StatsPage() {
       const { data: groupPreds } = await supabase
         .from('predictions_groups')
         .select('*, matches(*)')
+        .limit(3000)
 
       // Cargar brackets
       const { data: brackets } = await supabase
         .from('predictions_brackets')
         .select('*')
+        .limit(3000)
 
       if (!participants) {
         setLoading(false)

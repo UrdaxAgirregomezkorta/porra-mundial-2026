@@ -36,6 +36,7 @@ export default function MatchesPage() {
       const { data: predData } = await supabase
         .from('predictions_groups')
         .select('*')
+        .limit(3000)
 
       // Agrupar predicciones por match_id
       const predMap: Record<string, any[]> = {}
