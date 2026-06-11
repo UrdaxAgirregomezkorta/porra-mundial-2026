@@ -1,4 +1,6 @@
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -71,16 +73,16 @@ export default async function LeaderboardPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-3">
+                        <Link href={`/player/${participant.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                           <Avatar className="h-9 w-9 border border-slate-700">
                             <AvatarFallback className="bg-slate-800 text-xs text-slate-300">
                               {participant.name.substring(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="font-semibold tracking-wide text-slate-200">
+                          <span className="font-semibold tracking-wide text-emerald-400 hover:text-emerald-300 underline-offset-4 hover:underline">
                             {participant.name}
                           </span>
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell className="text-right">
                         <Badge variant="secondary" className="font-mono text-sm px-3 py-1 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 border border-indigo-500/20 transition-all">
