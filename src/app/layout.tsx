@@ -31,7 +31,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <footer className="py-6 text-center text-slate-500 text-sm border-t border-slate-800/50 bg-slate-950 mt-auto">
           <p>
-            <span className="text-emerald-500 font-semibold">AISAO</span> porria &copy; 2026
+            <span className="text-emerald-500 font-semibold">AISAO </span> porria &copy; 2026
           </p>
           <p className="mt-1">
             Urdax-ek garatua 🚀
