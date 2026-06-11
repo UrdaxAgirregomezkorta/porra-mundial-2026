@@ -78,9 +78,9 @@ export default function LeaderboardPage() {
         {/* Podium Top 3 */}
         {top3.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end mt-12 mb-16">
-            {/* 2nd Place */}
+            {/* 2nd Place — order-2 en móvil, order-1 en desktop (izquierda) */}
             {top3[1] && (
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="order-2 md:order-1">
                 <Link href={`/player/${top3[1].id}`}>
                   <Card className="bg-slate-900/40 border-slate-700/50 backdrop-blur-xl hover:bg-slate-800/50 transition-all cursor-pointer overflow-hidden group">
                     <CardContent className="p-6 flex flex-col items-center relative">
@@ -97,9 +97,9 @@ export default function LeaderboardPage() {
               </motion.div>
             )}
 
-            {/* 1st Place */}
+            {/* 1st Place — order-1 en móvil (primero), order-2 en desktop (centro) */}
             {top3[0] && (
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="z-10 relative">
+              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="order-1 md:order-2 z-10 relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 rounded-2xl blur opacity-25 animate-pulse" />
                 <Link href={`/player/${top3[0].id}`}>
                   <Card className="bg-slate-900/60 border-yellow-500/30 backdrop-blur-xl hover:bg-slate-800/80 transition-all cursor-pointer relative overflow-hidden group">
@@ -117,9 +117,9 @@ export default function LeaderboardPage() {
               </motion.div>
             )}
 
-            {/* 3rd Place */}
+            {/* 3rd Place — order-3 en ambos */}
             {top3[2] && (
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="order-3">
                 <Link href={`/player/${top3[2].id}`}>
                   <Card className="bg-slate-900/40 border-amber-700/30 backdrop-blur-xl hover:bg-slate-800/50 transition-all cursor-pointer overflow-hidden group">
                     <CardContent className="p-6 flex flex-col items-center relative">
