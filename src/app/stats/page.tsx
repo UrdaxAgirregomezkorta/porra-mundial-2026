@@ -37,17 +37,33 @@ export default function StatsPage() {
         .from('predictions_awards')
         .select('*')
 
-      // Cargar predicciones de grupos con partidos
-      const { data: groupPreds } = await supabase
-        .from('predictions_groups')
-        .select('*, matches(*)')
-        .limit(3000)
+      // Cargar predicciones de grupos con partidos (con paginación)
+      let groupPreds: any[] = []
+      let page = 0
+      while (true) {
+        const { data } = await supabase
+          .from('predictions_groups')
+          .select('*, matches(*)')
+          .range(page * 1000, (page + 1) * 1000 - 1)
+        if (!data || data.length === 0) break
+        groupPreds.push(...data)
+        if (data.length < 1000) break
+        page++
+      }
 
-      // Cargar brackets
-      const { data: brackets } = await supabase
-        .from('predictions_brackets')
-        .select('*')
-        .limit(3000)
+      // Cargar brackets (con paginación)
+      let brackets: any[] = []
+      let bracketPage = 0
+      while (true) {
+        const { data } = await supabase
+          .from('predictions_brackets')
+          .select('*')
+          .range(bracketPage * 1000, (bracketPage + 1) * 1000 - 1)
+        if (!data || data.length === 0) break
+        brackets.push(...data)
+        if (data.length < 1000) break
+        bracketPage++
+      }
 
       if (!participants) {
         setLoading(false)

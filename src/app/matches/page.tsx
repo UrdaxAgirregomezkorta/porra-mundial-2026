@@ -32,11 +32,19 @@ export default function MatchesPage() {
       const partMap: Record<string, string> = {}
       partData?.forEach(p => { partMap[p.id] = p.name })
 
-      // Cargar todas las predicciones de grupos
-      const { data: predData } = await supabase
-        .from('predictions_groups')
-        .select('*')
-        .limit(3000)
+      // Cargar todas las predicciones de grupos con paginación para evitar el límite de 1000
+      let predData: any[] = []
+      let page = 0
+      while (true) {
+        const { data } = await supabase
+          .from('predictions_groups')
+          .select('*')
+          .range(page * 1000, (page + 1) * 1000 - 1)
+        if (!data || data.length === 0) break
+        predData.push(...data)
+        if (data.length < 1000) break
+        page++
+      }
 
       // Agrupar predicciones por match_id
       const predMap: Record<string, any[]> = {}
