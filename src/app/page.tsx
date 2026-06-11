@@ -18,7 +18,13 @@ export default async function LeaderboardPage() {
     .order('total_points', { ascending: false })
 
   if (error) {
-    console.error('Error fetching participants:', error)
+    return (
+      <div className="p-8 text-center text-red-400">
+        <h2 className="text-2xl font-bold mb-4">Error de conexión con Supabase</h2>
+        <pre className="bg-slate-900 p-4 rounded text-left overflow-auto text-xs">{JSON.stringify(error, null, 2)}</pre>
+        <p className="mt-4 text-slate-500">Asegúrate de que las variables de entorno están bien copiadas en Vercel.</p>
+      </div>
+    )
   }
 
   return (
