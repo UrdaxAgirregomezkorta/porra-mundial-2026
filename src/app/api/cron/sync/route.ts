@@ -80,10 +80,15 @@ export async function GET(request: Request) {
             'AWARDED': 'FINISHED',
             'IN_PLAY': 'IN_PLAY',
             'PAUSED': 'IN_PLAY',
-            'LIVE': 'IN_PLAY'
+            'LIVE': 'IN_PLAY',
+            'TIMED': 'PENDING',
+            'SCHEDULED': 'PENDING',
+            'POSTPONED': 'PENDING',
+            'SUSPENDED': 'PENDING',
+            'CANCELLED': 'PENDING'
           }
 
-          const mappedStatus = statusMap[fixture.status]
+          const mappedStatus = statusMap[fixture.status] || 'PENDING'
           if (mappedStatus) {
             const homeTlas = getDbCodes(fixture.homeTeam?.tla || '')
             const awayTlas = getDbCodes(fixture.awayTeam?.tla || '')
@@ -94,15 +99,19 @@ export async function GET(request: Request) {
             )
 
             if (dbMatch) {
-              const homeScore = fixture.score?.fullTime?.home ?? fixture.score?.halfTime?.home ?? 0
-              const awayScore = fixture.score?.fullTime?.away ?? fixture.score?.halfTime?.away ?? 0
+              let homeScore = fixture.score?.fullTime?.home ?? fixture.score?.halfTime?.home
+              let awayScore = fixture.score?.fullTime?.away ?? fixture.score?.halfTime?.away
+              
+              if (homeScore === undefined) homeScore = null
+              if (awayScore === undefined) awayScore = null
 
               await supabase
                 .from('matches')
                 .update({
                   home_score: homeScore,
                   away_score: awayScore,
-                  status: mappedStatus
+                  status: mappedStatus,
+                  kickoff_time: fixture.utcDate
                 })
                 .eq('id', dbMatch.id)
             }
