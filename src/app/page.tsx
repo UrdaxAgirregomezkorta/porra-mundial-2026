@@ -66,6 +66,9 @@ export default function LeaderboardPage() {
           <h1 className="text-5xl md:text-6xl font-extrabold tracking-tighter bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent drop-shadow-sm">
             2026ko Mundiala
           </h1>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-emerald-400 mt-2">
+            AISAO porria
+          </h2>
           <p className="text-slate-400 max-w-lg mx-auto text-lg font-medium">
             Sailkapen ofiziala zuzenean
           </p>
