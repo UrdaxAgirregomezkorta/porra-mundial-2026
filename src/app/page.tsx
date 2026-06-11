@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Trophy } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Trophy, Calendar } from 'lucide-react'
 
 // Asegurar que la página siempre es dinámica para el ranking en tiempo real
 export const revalidate = 0
@@ -31,9 +32,17 @@ export default async function LeaderboardPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white via-slate-200 to-slate-500 bg-clip-text text-transparent">
             Clasificación Global
           </h1>
-          <p className="text-slate-400 max-w-lg mx-auto">
+          <p className="text-slate-400 max-w-lg mx-auto mb-6">
             Sigue en directo los puntos de la porra. Los resultados se actualizan automáticamente tras cada partido.
           </p>
+          <div className="flex justify-center mt-6">
+            <Link href="/matches">
+              <Button variant="outline" className="border-slate-700 bg-slate-900/50 hover:bg-slate-800 text-emerald-400">
+                <Calendar className="w-4 h-4 mr-2" />
+                Ver todos los partidos y apuestas
+              </Button>
+            </Link>
+          </div>
         </header>
 
         <Card className="bg-slate-900/50 border-slate-800 backdrop-blur-xl">
