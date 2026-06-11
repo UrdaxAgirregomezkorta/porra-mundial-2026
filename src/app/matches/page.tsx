@@ -71,9 +71,11 @@ export default function MatchesPage() {
                     </Badge>
                     <div className="flex items-center text-xs font-mono text-slate-400">
                       <Clock className="w-3 h-3 mr-1" />
-                      {new Date(match.kickoff_time).toLocaleDateString('es-ES', { 
-                        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
-                      })}
+                      {match.kickoff_time 
+                        ? new Date(match.kickoff_time).toLocaleDateString('es-ES', { 
+                            day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+                          })
+                        : 'Por definir'}
                     </div>
                   </div>
                   
