@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Trophy, Calendar, Medal } from 'lucide-react'
+import { Trophy, Calendar, Medal, BarChart3 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
@@ -69,10 +69,16 @@ export default function LeaderboardPage() {
           <p className="text-slate-400 max-w-lg mx-auto text-lg font-medium">
             Clasificación oficial en vivo
           </p>
-          <Link href="/matches" className="inline-flex items-center justify-center mt-6 px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-emerald-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] font-medium">
-            <Calendar className="w-5 h-5 mr-2" />
-            Ver Partidos y Apuestas
-          </Link>
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+            <Link href="/matches" className="inline-flex items-center justify-center px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-emerald-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] font-medium">
+              <Calendar className="w-5 h-5 mr-2" />
+              Partidos
+            </Link>
+            <Link href="/stats" className="inline-flex items-center justify-center px-6 py-3 bg-slate-900/50 hover:bg-slate-800 text-purple-400 rounded-full border border-slate-700/50 backdrop-blur-md transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] font-medium">
+              <BarChart3 className="w-5 h-5 mr-2" />
+              Estadísticas
+            </Link>
+          </div>
         </motion.header>
 
         {/* Podium Top 3 */}
