@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AISAO Porria - 2026ko Mundiala",
-  description: "2026ko Munduko Txapelketako AISAO porria. Urdax-ek garatua.",
+  description: "2026ko Mundialeko AISAO porria",
 };
 
 export default function RootLayout({
