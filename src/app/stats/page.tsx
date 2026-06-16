@@ -22,6 +22,7 @@ export default function StatsPage() {
     topScorerVotes: Record<string, number>
     mvpVotes: Record<string, number>
     mostPopularResults: { match: string; result: string; count: number }[]
+    realScorers: any[]
   } | null>(null)
 
   useEffect(() => {
@@ -68,6 +69,17 @@ export default function StatsPage() {
       if (!participants) {
         setLoading(false)
         return
+      }
+
+      // Cargar goleadores reales del endpoint cacheado
+      let realScorers = []
+      try {
+        const scorersRes = await fetch('/api/scorers')
+        if (scorersRes.ok) {
+          realScorers = await scorersRes.json()
+        }
+      } catch (e) {
+        console.error('Error fetching real scorers', e)
       }
 
       const points = participants.map(p => p.total_points)
@@ -127,6 +139,7 @@ export default function StatsPage() {
         topScorerVotes,
         mvpVotes,
         mostPopularResults,
+        realScorers,
       })
       setLoading(false)
     }
@@ -138,7 +151,7 @@ export default function StatsPage() {
       <div className="min-h-screen bg-slate-950 flex justify-center items-center">
         <div className="animate-pulse flex flex-col items-center">
           <BarChart3 className="w-16 h-16 text-emerald-500/50 mb-4" />
-          <p className="text-slate-400 font-medium">Calculando estadísticas...</p>
+          <p className="text-slate-400 font-medium">Estatistikak kargatzen...</p>
         </div>
       </div>
     )
@@ -157,20 +170,20 @@ export default function StatsPage() {
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-800/50">
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tighter bg-gradient-to-r from-emerald-400 to-emerald-200 bg-clip-text text-transparent">
-            📊 Estadísticas
+            📊 Estatistikak
           </h1>
           <Link href="/" className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-full text-sm font-medium hover:bg-slate-800 transition-colors">
-            ← Clasificación
+            ← Sailkapena
           </Link>
         </div>
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'Jugadores', value: stats.totalParticipants, icon: Users, color: 'text-blue-400' },
-            { label: 'Pronósticos', value: stats.totalPredictions, icon: Target, color: 'text-emerald-400' },
-            { label: 'Media Pts', value: stats.avgPoints, icon: TrendingUp, color: 'text-purple-400' },
-            { label: 'Líder', value: stats.leaderName, icon: Trophy, color: 'text-yellow-400' },
+            { label: 'Jokalariak', value: stats.totalParticipants, icon: Users, color: 'text-blue-400' },
+            { label: 'Pronostikoak', value: stats.totalPredictions, icon: Target, color: 'text-emerald-400' },
+            { label: 'Batez besteko Puntuak', value: stats.avgPoints, icon: TrendingUp, color: 'text-purple-400' },
+            { label: 'Liderra', value: stats.leaderName, icon: Trophy, color: 'text-yellow-400' },
           ].map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               <Card className="bg-slate-900/40 border-slate-800/50 backdrop-blur-md">
@@ -188,7 +201,7 @@ export default function StatsPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
             <Trophy className="w-5 h-5 text-yellow-400" />
-            ¿Quién gana el Mundial?
+            Nork irabaziko du Mundiala?
           </h2>
           <div className="space-y-2">
             {sortedChampions.map(([team, votes], i) => {
@@ -205,7 +218,7 @@ export default function StatsPage() {
                       <span className="font-bold text-white">{getTeamName(team)}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-slate-400">{votes} votos</span>
+                      <span className="text-sm text-slate-400">{votes} boto</span>
                       <Badge className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 font-mono">{pct}%</Badge>
                     </div>
                   </div>
@@ -220,13 +233,13 @@ export default function StatsPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
               <Award className="w-5 h-5 text-emerald-400" />
-              Pichichi más votado
+              Pichichi bozkatuena
             </h2>
             <div className="grid gap-2 md:grid-cols-2">
               {sortedScorers.slice(0, 10).map(([player, votes]) => (
                 <div key={player} className="flex items-center justify-between px-4 py-3 bg-slate-900/40 border border-slate-800/50 rounded-xl">
                   <span className="font-semibold text-slate-200">{player}</span>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">{votes} votos</Badge>
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">{votes} boto</Badge>
                 </div>
               ))}
             </div>
@@ -238,13 +251,40 @@ export default function StatsPage() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
               <Award className="w-5 h-5 text-purple-400" />
-              MVP más votado
+              MVP bozkatuena
             </h2>
             <div className="grid gap-2 md:grid-cols-2">
               {sortedMvps.slice(0, 10).map(([player, votes]) => (
                 <div key={player} className="flex items-center justify-between px-4 py-3 bg-slate-900/40 border border-slate-800/50 rounded-xl">
                   <span className="font-semibold text-slate-200">{player}</span>
-                  <Badge className="bg-purple-500/20 text-purple-400 border border-purple-500/30">{votes} votos</Badge>
+                  <Badge className="bg-purple-500/20 text-purple-400 border border-purple-500/30">{votes} boto</Badge>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Goleadores Oficiales */}
+        {stats.realScorers && stats.realScorers.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55 }}>
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Award className="w-5 h-5 text-blue-400" />
+              Golegile Nagusiak (Erreala)
+            </h2>
+            <div className="bg-slate-900/40 border border-slate-800/50 rounded-xl overflow-hidden">
+              {stats.realScorers.slice(0, 5).map((scorer: any, i: number) => (
+                <div key={scorer.player.name} className="flex items-center justify-between px-4 py-3 border-b border-slate-800/50 last:border-0">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-mono text-slate-500 w-4">{i + 1}.</span>
+                    <div>
+                      <p className="font-bold text-white leading-tight">{scorer.player.name}</p>
+                      <p className="text-xs text-slate-400">{scorer.team.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black text-blue-400 font-mono">{scorer.goals}</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Gol</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -254,8 +294,8 @@ export default function StatsPage() {
         {/* Resultados más populares */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
           <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Target className="w-5 h-5 text-blue-400" />
-            Pronósticos más repetidos
+            <Target className="w-5 h-5 text-pink-400" />
+            Pronostiko errepikatuenak
           </h2>
           <div className="grid gap-2 md:grid-cols-2">
             {stats.mostPopularResults.slice(0, 12).map(({ match, result, count }) => {
