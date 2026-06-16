@@ -157,30 +157,113 @@ export async function GET(request: Request) {
         }
       }
     }
+    // 2.5 Obtener goleadores reales de la API
+    const scorersRes = await fetch('https://api.football-data.org/v4/competitions/WC/scorers?limit=100', {
+      headers: { 'X-Auth-Token': apiToken },
+      cache: 'no-store'
+    })
+    
+    let officialScorers: any[] = []
+    if (scorersRes.ok) {
+      const scorersData = await scorersRes.json()
+      officialScorers = scorersData.scorers || []
+    }
 
+    if (officialScorers.length > 0) {
+      // Recuperar predicciones de Pichichi
+      let allAwards: any[] = []
+      let page = 0
+      while (true) {
+        const { data: pageData } = await supabase
+          .from('predictions_awards')
+          .select('*')
+          .in('category', ['top_scorer_1', 'top_scorer_2'])
+          .range(page * 1000, (page + 1) * 1000 - 1)
+        if (!pageData || pageData.length === 0) break
+        allAwards.push(...pageData)
+        if (pageData.length < 1000) break
+        page++
+      }
+
+      const normalize = (n: string) => (n || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim()
+
+      for (const pred of allAwards) {
+        let goals = 0
+        const normPred = normalize(pred.predicted_value)
+        const predWords = normPred.split(' ').filter((w: string) => w.length > 3 || w === normPred)
+
+        // Encontrar al jugador en la lista oficial
+        const matchedScorer = officialScorers.find(s => {
+          const normOff = normalize(s.player?.name || '')
+          const offWords = normOff.split(' ')
+          if (normPred === normOff) return true
+          if (predWords.length > 0 && predWords.some((w: string) => offWords.includes(w))) return true
+          return false
+        })
+
+        if (matchedScorer) {
+          goals = matchedScorer.goals || 0
+        }
+
+        const multiplier = pred.category === 'top_scorer_1' ? 5 : 2
+        const points = goals * multiplier
+
+        if (pred.points_earned !== points) {
+          await supabase.from('predictions_awards').update({ points_earned: points }).eq('id', pred.id)
+        }
+      }
+    }
     // 3. Recalcular puntos totales por participante
     const { data: participants } = await supabase.from('participants').select('*')
     if (participants) {
       for (const p of participants) {
-        let pGroups: any[] = []
-        let page = 0
+        let sumGroups = 0
+        let pageGroups = 0
         while (true) {
           const { data: pageData } = await supabase
             .from('predictions_groups')
             .select('points_earned')
             .eq('participant_id', p.id)
-            .range(page * 1000, (page + 1) * 1000 - 1)
+            .range(pageGroups * 1000, (pageGroups + 1) * 1000 - 1)
           if (!pageData || pageData.length === 0) break
-          pGroups.push(...pageData)
+          sumGroups += pageData.reduce((acc, curr) => acc + (curr.points_earned || 0), 0)
           if (pageData.length < 1000) break
-          page++
+          pageGroups++
         }
         
-        const sumGroups = pGroups.reduce((acc, curr) => acc + (curr.points_earned || 0), 0)
+        let sumAwards = 0
+        let pageAwards = 0
+        while (true) {
+          const { data: pageData } = await supabase
+            .from('predictions_awards')
+            .select('points_earned')
+            .eq('participant_id', p.id)
+            .range(pageAwards * 1000, (pageAwards + 1) * 1000 - 1)
+          if (!pageData || pageData.length === 0) break
+          sumAwards += pageData.reduce((acc, curr) => acc + (curr.points_earned || 0), 0)
+          if (pageData.length < 1000) break
+          pageAwards++
+        }
+
+        let sumBrackets = 0
+        let pageBrackets = 0
+        while (true) {
+          const { data: pageData } = await supabase
+            .from('predictions_brackets')
+            .select('points_earned')
+            .eq('participant_id', p.id)
+            .range(pageBrackets * 1000, (pageBrackets + 1) * 1000 - 1)
+          if (!pageData || pageData.length === 0) break
+          sumBrackets += pageData.reduce((acc, curr) => acc + (curr.points_earned || 0), 0)
+          if (pageData.length < 1000) break
+          pageBrackets++
+        }
+
+        const totalPoints = sumGroups + sumAwards + sumBrackets
 
         await supabase
           .from('participants')
-          .update({ total_points: sumGroups })
+          .update({ total_points: totalPoints })
           .eq('id', p.id)
       }
     }
