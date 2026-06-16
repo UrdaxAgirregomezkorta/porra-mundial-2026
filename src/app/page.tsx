@@ -85,25 +85,7 @@ export default function LeaderboardPage() {
         {/* Podium Top 3 */}
         {top3.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end mt-12 mb-16">
-            {/* 2nd Place — order-2 en móvil, order-1 en desktop (izquierda) */}
-            {top3[1] && (
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="order-2 md:order-1">
-                <Link href={`/player/${top3[1].id}`}>
-                  <Card className="bg-slate-900/40 border-slate-700/50 backdrop-blur-xl hover:bg-slate-800/50 transition-all cursor-pointer overflow-hidden group">
-                    <CardContent className="p-6 flex flex-col items-center relative">
-                      <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-50" />
-                      <Avatar className="h-20 w-20 border-4 border-slate-400/30 mb-4 shadow-[0_0_15px_rgba(148,163,184,0.2)] group-hover:scale-110 transition-transform">
-                        <AvatarFallback className="bg-slate-800 text-xl font-bold text-slate-300">{top3[1].name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <Medal className="w-6 h-6 text-slate-300 mb-2" />
-                      <h3 className="font-bold text-xl text-white">{top3[1].name}</h3>
-                      <p className="text-2xl font-black text-slate-300 font-mono mt-1">{top3[1].total_points} pts</p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            )}
-
+            
             {/* 1st Place — order-1 en móvil (primero), order-2 en desktop (centro) */}
             {top3[0] && (
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }} className="order-1 md:order-2 z-10 relative">
@@ -118,6 +100,25 @@ export default function LeaderboardPage() {
                       <Trophy className="w-8 h-8 text-yellow-400 mb-2 drop-shadow-md" />
                       <h3 className="font-extrabold text-2xl text-white">{top3[0].name}</h3>
                       <p className="text-4xl font-black text-yellow-400 font-mono mt-2 drop-shadow-md">{top3[0].total_points} pts</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            )}
+
+            {/* 2nd Place — order-2 en móvil, order-1 en desktop (izquierda) */}
+            {top3[1] && (
+              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="order-2 md:order-1">
+                <Link href={`/player/${top3[1].id}`}>
+                  <Card className="bg-slate-900/40 border-slate-700/50 backdrop-blur-xl hover:bg-slate-800/50 transition-all cursor-pointer overflow-hidden group">
+                    <CardContent className="p-6 flex flex-col items-center relative">
+                      <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-50" />
+                      <Avatar className="h-20 w-20 border-4 border-slate-400/30 mb-4 shadow-[0_0_15px_rgba(148,163,184,0.2)] group-hover:scale-110 transition-transform">
+                        <AvatarFallback className="bg-slate-800 text-xl font-bold text-slate-300">{top3[1].name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <Medal className="w-6 h-6 text-slate-300 mb-2" />
+                      <h3 className="font-bold text-xl text-white">{top3[1].name}</h3>
+                      <p className="text-2xl font-black text-slate-300 font-mono mt-1">{top3[1].total_points} pts</p>
                     </CardContent>
                   </Card>
                 </Link>
