@@ -43,7 +43,7 @@ export const TEAM_NAMES: Record<string, string> = {
   'UZB': 'Uzbekistán',
   'ESC': 'Escocia',
   'ARA': 'Arabia Saudí',
-  'ARB': 'Arabia Saudí',
+  'ARB': 'Argelia',
   'PBJ': 'Países Bajos',
   'B&H': 'Bosnia y Herzegovina',
   'CAB': 'Cabo Verde',
